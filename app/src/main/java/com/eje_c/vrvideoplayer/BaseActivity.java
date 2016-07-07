@@ -46,13 +46,15 @@ public abstract class BaseActivity extends MeganekkoActivity {
     }
 
     @Override
-    public void onHmdMounted(){
+    public void onHmdMounted() {
         Log.d(TAG, "User Detected");
+        VideoPlayerApp.setVRUser(true);
     }
 
     @Override
-    public void onHmdUnmounted(){
+    public void onHmdUnmounted() {
         Log.d(TAG, "User Lost");
+        VideoPlayerApp.setVRUser(false);
     }
 
 }

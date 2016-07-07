@@ -33,6 +33,17 @@ public class VideoPlayerApp extends MeganekkoApp {
     private ObjectLookingStateDetector detector;
     private boolean playing;
 
+    private static boolean user = true; //"private" means access to this is restricted
+
+    public static void getVRUser(boolean value) {
+        Log.d(TAG, "getVRUser");
+    }
+
+    public static void setVRUser(boolean value) {
+        Log.d(TAG, "setVRUser");
+        user = value;
+    }
+
     protected VideoPlayerApp(Meganekko meganekko, MainActivity activity) {
         super(meganekko);
         this.activity = activity;
@@ -87,14 +98,20 @@ public class VideoPlayerApp extends MeganekkoApp {
     public void update() {
 
         //lancer la vidéo en bouclant
-        if(!playing) {
+        if(!playing && user) {
             startPlaying();
         }
+
+        // NOT WORKING
+        /*else if(playing && !user){
+            this.onPause();
+        }/**/
 
         if (!playing) {
             detector.update(getFrame());
 
         }
+
         super.update();
     }
 
