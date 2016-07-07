@@ -55,6 +55,7 @@ public class VideoPlayerApp extends MeganekkoApp {
         this.fadeOutCanvas = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_out);
         fadeOutCanvas.setTarget(canvas);
 
+        /*
         // animation while looking at start button
         detector = new ObjectLookingStateDetector(this, canvas, new ObjectLookingStateDetector.ObjectLookingStateListener() {
             boolean notified;
@@ -79,15 +80,16 @@ public class VideoPlayerApp extends MeganekkoApp {
                 canvasRenderer.setLooking(false);
             }
         });
+        */
     }
 
     @Override
     public void update() {
 
         //lancer la vidéo en bouclant
-        //if(!playing) {
-         //   startPlaying();
-        //}
+        if(!playing) {
+            startPlaying();
+        }
 
         if (!playing) {
             detector.update(getFrame());
