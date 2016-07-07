@@ -37,7 +37,7 @@ public class VideoPlayerApp extends MeganekkoApp {
         super(meganekko);
         this.activity = activity;
 
-        file = new File(Environment.getExternalStorageDirectory(), getContext().getString(R.string.video_path_from_sdcard));
+        //file = new File(Environment.getExternalStorageDirectory(), getContext().getString(R.string.video_path_from_sdcard));
 
         activity.showGazeCursor();
         setSceneFromXML(R.xml.scene);
@@ -50,7 +50,7 @@ public class VideoPlayerApp extends MeganekkoApp {
         video = getScene().findObjectById(R.id.video);
 
         // setup animations
-        this.fadeInVideo = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_in);
+        /*this.fadeInVideo = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_in);
         fadeInVideo.setTarget(video);
         this.fadeOutCanvas = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_out);
         fadeOutCanvas.setTarget(canvas);
@@ -78,12 +78,16 @@ public class VideoPlayerApp extends MeganekkoApp {
             public void onLookEnd(SceneObject sceneObject, Frame frame) {
                 canvasRenderer.setLooking(false);
             }
-        });
+        });/**/
+
+        startPlaying();
+
     }
 
     @Override
     public void update() {
 
+        // FP2 : boucler la lecture de la vidéo
         if (!playing) {
             detector.update(getFrame());
         }
