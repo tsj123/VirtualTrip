@@ -10,6 +10,8 @@ import ovr.KeyCode;
 
 public abstract class BaseActivity extends MeganekkoActivity {
 
+    public static final String TAG = "videoPlayerAppTag";
+
     // If you intent to prevent unpredictable user control, such as returning to Oculus Home,
     // disabling back button is effective option.
     // But such behavior is contrary to the Oculus guideline.
