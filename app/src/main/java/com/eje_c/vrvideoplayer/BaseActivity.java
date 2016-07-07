@@ -2,6 +2,7 @@ package com.eje_c.vrvideoplayer;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.util.Log;
 
 import com.eje_c.meganekko.gearvr.MeganekkoActivity;
 
@@ -41,4 +42,10 @@ public abstract class BaseActivity extends MeganekkoActivity {
 
         return super.onKeyLongPress(keyCode, repeatCount);
     }
+
+    @Override
+    public void onHmdMounted(){
+        Log.d(TAG, "ONHMDMOUNTED");
+    }
+
 }
