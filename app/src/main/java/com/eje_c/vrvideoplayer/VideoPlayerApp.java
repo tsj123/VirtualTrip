@@ -37,7 +37,7 @@ public class VideoPlayerApp extends MeganekkoApp {
         super(meganekko);
         this.activity = activity;
 
-        //file = new File(Environment.getExternalStorageDirectory(), getContext().getString(R.string.video_path_from_sdcard));
+        file = new File(Environment.getExternalStorageDirectory(), getContext().getString(R.string.video_path_from_sdcard));
 
         activity.showGazeCursor();
         setSceneFromXML(R.xml.scene);
@@ -50,7 +50,7 @@ public class VideoPlayerApp extends MeganekkoApp {
         video = getScene().findObjectById(R.id.video);
 
         // setup animations
-        /*this.fadeInVideo = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_in);
+        this.fadeInVideo = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_in);
         fadeInVideo.setTarget(video);
         this.fadeOutCanvas = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_out);
         fadeOutCanvas.setTarget(canvas);
@@ -78,18 +78,20 @@ public class VideoPlayerApp extends MeganekkoApp {
             public void onLookEnd(SceneObject sceneObject, Frame frame) {
                 canvasRenderer.setLooking(false);
             }
-        });/**/
-
-        startPlaying();
-
+        });
     }
 
     @Override
     public void update() {
 
-        // FP2 : boucler la lecture de la vidéo
+        //lancer la vidéo en bouclant
+        //if(!playing) {
+         //   startPlaying();
+        //}
+
         if (!playing) {
             detector.update(getFrame());
+
         }
         super.update();
     }
@@ -129,22 +131,21 @@ public class VideoPlayerApp extends MeganekkoApp {
         playing = true;
         activity.hideGazeCursor();
 
+
         if (mediaPlayer != null) {
             Log.d(TAG,"mediaPlayer pas null 01");
             release();
         }
 
-
         //choisir entre la vidéo de la carte SD et la video par défaut
-        if (file.exists()) {
-            Log.d(TAG,"file exist");
-            mediaPlayer = MediaPlayer.create(getContext(), Uri.fromFile(file));
-            //mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
-            Log.d(TAG,"mediaPlayer cree");
-        } else {
+        //if (file.exists()) {
+         //   Log.d(TAG,"file exist");
+         //   mediaPlayer = MediaPlayer.create(getContext(), Uri.fromFile(file));
+         //   Log.d(TAG,"mediaPlayer cree");
+        //} else {
             mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
-            activity.getApp().showInfoText(3, getContext().getString(R.string.error_default_video));
-        }
+          //  activity.getApp().showInfoText(3, getContext().getString(R.string.error_default_video));
+       // }
 
         if (mediaPlayer != null) {
             Log.d(TAG,"mediaPlayer pas null 02");
