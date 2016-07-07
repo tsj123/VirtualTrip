@@ -47,7 +47,12 @@ public abstract class BaseActivity extends MeganekkoActivity {
 
     @Override
     public void onHmdMounted(){
-        Log.d(TAG, "ONHMDMOUNTED");
+        Log.d(TAG, "User Detected");
+    }
+
+    @Override
+    public void onHmdUnmounted(){
+        Log.d(TAG, "User Lost");
     }
 
 }
