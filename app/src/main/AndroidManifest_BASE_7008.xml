@@ -33,39 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
-        <!--
-        <receiver android:name="com.eje_c.vrvideoplayer.SensorReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.proximity_sensor" />
-            </intent-filter>
-        </receiver>-->
-
     </application>
 
 </manifest>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

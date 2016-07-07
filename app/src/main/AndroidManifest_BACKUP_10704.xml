@@ -34,13 +34,20 @@
             </intent-filter>
         </activity>
 
-
+<<<<<<< HEAD
         <!--
         <receiver android:name="com.eje_c.vrvideoplayer.SensorReceiver" android:exported="true">
+=======
+        <receiver android:name="MyReceiver">
+>>>>>>> 0949cad5725df4c85dfaeab0990cd1cae8c0e302
             <intent-filter>
                 <action android:name="android.intent.action.proximity_sensor" />
             </intent-filter>
-        </receiver>-->
+        </receiver>
+<<<<<<< HEAD
+        -->
+=======
+>>>>>>> 0949cad5725df4c85dfaeab0990cd1cae8c0e302
 
     </application>
 
