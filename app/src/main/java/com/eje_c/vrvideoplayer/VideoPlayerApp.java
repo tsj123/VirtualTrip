@@ -95,6 +95,7 @@ public class VideoPlayerApp extends MeganekkoApp {
             startPlaying();
 
             //timer.cancel();
+            //timer = null;
 
         }
         else if(playing && !user) {
@@ -107,11 +108,12 @@ public class VideoPlayerApp extends MeganekkoApp {
                 public void run()
                 {
                     //counter++;
-                    Log.d(TAG, "tempo lancee");
+                    Log.d(TAG, "tempo lancee"+counter);
                     tempo = true;
-                    timer.cancel();
+                    counter++;
+                    //timer.cancel();
                 }
-            }, 10000,1);
+            },4000);
 
         }
         /*
