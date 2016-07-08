@@ -93,6 +93,12 @@ public class VideoPlayerApp extends MeganekkoApp {
         });
         */
 
+        //Initialiser le media player une bonne fois pour toutes
+        if (mediaPlayer != null) {
+            Log.d(TAG,"mediaPlayer pas null 01");
+            release();
+        }
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
         startPlaying();
 
     }
@@ -103,57 +109,12 @@ public class VideoPlayerApp extends MeganekkoApp {
         //lancer la vidéo en bouclant
         if(!playing && user) {
             playing = true;
-            activity.hideGazeCursor();
-
-            Log.d(TAG, "mediaPlayer start");
-            mediaPlayer.start();
-            video.getRenderData().getMaterial().getTexture().set(mediaPlayer);
-
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    runOnGlThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pause();
-                        }
-                    });
-                }
-            });
-            if (canvas != null) {
-                animate(fadeOutCanvas, new Runnable() {
-                    @Override
-                    public void run() {
-                        canvas.setVisible(false);
-                    }
-                });
-            }
-            if (video != null) {
-                animate(fadeInVideo, new Runnable() {
-                    @Override
-                    public void run() {
-                        video.setVisible(true);
-                    }
-                });
-            }
-
+            startPlaying();
         }
 
-        // resume
-
-
-        // NOT WORKING
         else if(playing && !user){
-            /*Log.d(TAG, "mise en pause de la lecture");
-            runOnGlThread(new Runnable() {
-                @Override
-                public void run() {
-                    pause();
-                }
-            });*/
             pause();
-
-        }/**/
+        }
 
         /* Cette condition  faisait quitter l'application lors de la fin de la vidéo en l'abscence d'utilisateur
         if (!playing) {
@@ -200,18 +161,20 @@ public class VideoPlayerApp extends MeganekkoApp {
         playing = true;
         activity.hideGazeCursor();
 
-
+/*On effectue ces lignes de code au début une seule fois
         if (mediaPlayer != null) {
             Log.d(TAG,"mediaPlayer pas null 01");
             release();
         }
+        */
             //choisir entre la vidéo de la carte SD et la video par défaut
             //if (file.exists()) {
             //   Log.d(TAG,"file exist");
             //   mediaPlayer = MediaPlayer.create(getContext(), Uri.fromFile(file));
             //   Log.d(TAG,"mediaPlayer cree");
             //} else {
-            mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
+        //On effectue cette ligne de code au début une seule fois.
+            //mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
             //  activity.getApp().showInfoText(3, getContext().getString(R.string.error_default_video));
             // }
 
