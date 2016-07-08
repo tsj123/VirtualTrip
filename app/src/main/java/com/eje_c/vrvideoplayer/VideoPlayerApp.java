@@ -107,11 +107,11 @@ public class VideoPlayerApp extends MeganekkoApp {
             this.onPause();
         }/**/
 
+        /* Cette condition  faisait quitter l'application lors de la fin de la vidéo en l'abscence d'utilisateur
         if (!playing) {
             detector.update(getFrame());
-
         }
-
+        */
         super.update();
     }
 
