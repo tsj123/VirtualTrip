@@ -92,19 +92,35 @@ public class VideoPlayerApp extends MeganekkoApp {
             }
         });
         */
+
+        startPlaying();
+
     }
 
     @Override
     public void update() {
-
+        //Log.d(TAG, "boucle update");
         //lancer la vidéo en bouclant
         if(!playing && user) {
+            //mediaPlayer.start();
+            //playing = true;
             startPlaying();
         }
 
+        // resume
+
+
         // NOT WORKING
-        /*else if(playing && !user){
-            this.onPause();
+        else if(playing && !user){
+            /*Log.d(TAG, "mise en pause de la lecture");
+            runOnGlThread(new Runnable() {
+                @Override
+                public void run() {
+                    pause();
+                }
+            });*/
+            pause();
+
         }/**/
 
         /* Cette condition  faisait quitter l'application lors de la fin de la vidéo en l'abscence d'utilisateur
@@ -112,6 +128,7 @@ public class VideoPlayerApp extends MeganekkoApp {
             detector.update(getFrame());
         }
         */
+
         super.update();
     }
 
@@ -133,6 +150,7 @@ public class VideoPlayerApp extends MeganekkoApp {
     }
 
     private void release() {
+        Log.d(TAG,"release enclanche");
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.release();
@@ -155,68 +173,68 @@ public class VideoPlayerApp extends MeganekkoApp {
             Log.d(TAG,"mediaPlayer pas null 01");
             release();
         }
-
-        //choisir entre la vidéo de la carte SD et la video par défaut
-        //if (file.exists()) {
-         //   Log.d(TAG,"file exist");
-         //   mediaPlayer = MediaPlayer.create(getContext(), Uri.fromFile(file));
-         //   Log.d(TAG,"mediaPlayer cree");
-        //} else {
+            //choisir entre la vidéo de la carte SD et la video par défaut
+            //if (file.exists()) {
+            //   Log.d(TAG,"file exist");
+            //   mediaPlayer = MediaPlayer.create(getContext(), Uri.fromFile(file));
+            //   Log.d(TAG,"mediaPlayer cree");
+            //} else {
             mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
-          //  activity.getApp().showInfoText(3, getContext().getString(R.string.error_default_video));
-       // }
+            //  activity.getApp().showInfoText(3, getContext().getString(R.string.error_default_video));
+            // }
 
-        if (mediaPlayer != null) {
-            Log.d(TAG,"mediaPlayer pas null 02");
-            try {
-                Log.d(TAG,"mediaPlayer start");
-                mediaPlayer.start();
-                video.getRenderData().getMaterial().getTexture().set(mediaPlayer);
+            if (mediaPlayer != null) {
+                Log.d(TAG, "mediaPlayer pas null 02");
+                try {
+                    Log.d(TAG, "mediaPlayer start");
+                    mediaPlayer.start();
+                    video.getRenderData().getMaterial().getTexture().set(mediaPlayer);
 
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            runOnGlThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pause();
+                                }
+                            });
+                        }
+                    });
+                } catch (IllegalStateException e) {
+                    activity.getApp().showInfoText(1, "error");
+                    e.printStackTrace();
+                }
+            }
+
+            if (canvas != null) {
+                animate(fadeOutCanvas, new Runnable() {
                     @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        runOnGlThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pause();
-                            }
-                        });
+                    public void run() {
+                        canvas.setVisible(false);
                     }
                 });
-            } catch (IllegalStateException e) {
-                activity.getApp().showInfoText(1, "error");
-                e.printStackTrace();
             }
-        }
 
-        if (canvas != null) {
-            animate(fadeOutCanvas, new Runnable() {
-                @Override
-                public void run() {
-                    canvas.setVisible(false);
-                }
-            });
-        }
-
-        if (video != null) {
-            animate(fadeInVideo, new Runnable() {
-                @Override
-                public void run() {
-                    video.setVisible(true);
-                }
-            });
-        }
+            if (video != null) {
+                animate(fadeInVideo, new Runnable() {
+                    @Override
+                    public void run() {
+                        video.setVisible(true);
+                    }
+                });
+            }
     }
 
     private void pause() {
+
         playing = false;
         activity.showGazeCursor();
 
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.pause();
-                mediaPlayer.seekTo(0);
+                //mediaPlayer.seekTo(0);
             } catch (IllegalStateException e) {
                 activity.getApp().showInfoText(1, "error");
                 e.printStackTrace();
