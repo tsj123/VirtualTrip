@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Log;
 
@@ -16,12 +17,19 @@ import com.eje_c.meganekko.SceneObject;
 import android.util.Log;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class VideoPlayerApp extends MeganekkoApp {
 
     //déclaration du tag
     public static final String TAG = "videoPlayerAppTag";
+
+    private CountDownTimer waitTimer;
+    private boolean tempo = false;
+    private Timer timer = new Timer();
+    private int counter = 0;
 
     private final MainActivity activity;
     private File file;
@@ -33,7 +41,8 @@ public class VideoPlayerApp extends MeganekkoApp {
     private ObjectLookingStateDetector detector;
     private boolean playing;
 
-    private static boolean user = true; //"private" means access to this is restricted
+    private static boolean user = false; //"private" means access to this is restricted
+    private static boolean pastUser = false; //"private" means access to this is restricted
 
     public static void getVRUser(boolean value) {
         Log.d(TAG, "getVRUser");
@@ -66,33 +75,6 @@ public class VideoPlayerApp extends MeganekkoApp {
         this.fadeOutCanvas = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_out);
         fadeOutCanvas.setTarget(canvas);
 
-        /*
-        // animation while looking at start button
-        detector = new ObjectLookingStateDetector(this, canvas, new ObjectLookingStateDetector.ObjectLookingStateListener() {
-            boolean notified;
-
-            @Override
-            public void onLookStart(SceneObject sceneObject, Frame frame) {
-                canvasRenderer.setLooking(true);
-            }
-
-            @Override
-            public void onLooking(SceneObject sceneObject, Frame frame) {
-                canvasRenderer.update(frame);
-
-                if (!notified && canvasRenderer.getSweepFraction() >= 1.0f) {
-                    notified = true;
-                    startPlaying();
-                }
-            }
-
-            @Override
-            public void onLookEnd(SceneObject sceneObject, Frame frame) {
-                canvasRenderer.setLooking(false);
-            }
-        });
-        */
-
         //Initialiser le media player une bonne fois pour toutes
         if (mediaPlayer != null) {
             Log.d(TAG,"mediaPlayer pas null 01");
@@ -105,23 +87,43 @@ public class VideoPlayerApp extends MeganekkoApp {
 
     @Override
     public void update() {
-        //Log.d(TAG, "boucle update");
-        //lancer la vidéo en bouclant
+        Log.d(TAG, "boucle update");
+
         if(!playing && user) {
+            Log.d(TAG, "pas playing et user");
             playing = true;
             startPlaying();
-        }
 
-        else if(playing && !user){
+            //timer.cancel();
+
+        }
+        else if(playing && !user) {
+            Log.d(TAG, "playing et pas user");
             pause();
-        }
+            //lancer la tempo
+            //Timer timer = new Timer();
 
-        /* Cette condition  faisait quitter l'application lors de la fin de la vidéo en l'abscence d'utilisateur
-        if (!playing) {
-            detector.update(getFrame());
-        }
-        */
+            timer.schedule (new TimerTask() {
+                public void run()
+                {
+                    //counter++;
+                    Log.d(TAG, "tempo lancee");
+                    tempo = true;
+                    timer.cancel();
+                }
+            }, 10000,1);
 
+        }
+        /*
+        if(!playing && tempo){
+            Log.d(TAG, "pas playing et tempo");
+            //réinitialiser la tempo
+            Log.d(TAG, "reinitialiser tempo");
+            timer.cancel();
+            tempo = false;
+            release();
+        }
+*/
         super.update();
     }
 
@@ -222,7 +224,7 @@ public class VideoPlayerApp extends MeganekkoApp {
     }
 
     private void pause() {
-
+        Log.d(TAG, "pause");
         playing = false;
         activity.showGazeCursor();
 
