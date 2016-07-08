@@ -103,9 +103,9 @@ public class VideoPlayerApp extends MeganekkoApp {
         }
 
         // NOT WORKING
-        /*else if(playing && !user){
-            this.onPause();
-        }/**/
+        else if(playing && !user){
+            pause();
+        }
 
         /* Cette condition  faisait quitter l'application lors de la fin de la vidéo en l'abscence d'utilisateur
         if (!playing) {
