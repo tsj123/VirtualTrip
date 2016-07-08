@@ -102,9 +102,41 @@ public class VideoPlayerApp extends MeganekkoApp {
         //Log.d(TAG, "boucle update");
         //lancer la vidéo en bouclant
         if(!playing && user) {
-            //mediaPlayer.start();
-            //playing = true;
-            startPlaying();
+            playing = true;
+            activity.hideGazeCursor();
+
+            Log.d(TAG, "mediaPlayer start");
+            mediaPlayer.start();
+            video.getRenderData().getMaterial().getTexture().set(mediaPlayer);
+
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    runOnGlThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pause();
+                        }
+                    });
+                }
+            });
+            if (canvas != null) {
+                animate(fadeOutCanvas, new Runnable() {
+                    @Override
+                    public void run() {
+                        canvas.setVisible(false);
+                    }
+                });
+            }
+            if (video != null) {
+                animate(fadeInVideo, new Runnable() {
+                    @Override
+                    public void run() {
+                        video.setVisible(true);
+                    }
+                });
+            }
+
         }
 
         // resume
