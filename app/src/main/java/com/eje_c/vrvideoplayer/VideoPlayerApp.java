@@ -30,6 +30,7 @@ public class VideoPlayerApp extends MeganekkoApp {
     private boolean tempo = false;
     private Timer timer = new Timer();
     private int counter = 0;
+    private int idTimer = 0;
 
     private final MainActivity activity;
     private File file;
@@ -93,39 +94,12 @@ public class VideoPlayerApp extends MeganekkoApp {
             Log.d(TAG, "pas playing et user");
             playing = true;
             startPlaying();
-
-            //timer.cancel();
-            //timer = null;
-
         }
+
         else if(playing && !user) {
             Log.d(TAG, "playing et pas user");
             pause();
-            //lancer la tempo
-            //Timer timer = new Timer();
-
-            timer.schedule (new TimerTask() {
-                public void run()
-                {
-                    //counter++;
-                    Log.d(TAG, "tempo lancee"+counter);
-                    tempo = true;
-                    counter++;
-                    //timer.cancel();
-                }
-            },4000);
-
         }
-        /*
-        if(!playing && tempo){
-            Log.d(TAG, "pas playing et tempo");
-            //réinitialiser la tempo
-            Log.d(TAG, "reinitialiser tempo");
-            timer.cancel();
-            tempo = false;
-            release();
-        }
-*/
         super.update();
     }
 
@@ -138,6 +112,17 @@ public class VideoPlayerApp extends MeganekkoApp {
                 pause();
             }
         });
+    }
+
+    @Override
+    public void onResume(){
+        // on remet la vidéo au début
+        Log.d(TAG,"video au debut");
+        if (mediaPlayer != null) {
+            Log.d(TAG,"mediaPlayer pas null 01");
+            release();
+        }
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
     }
 
     @Override
