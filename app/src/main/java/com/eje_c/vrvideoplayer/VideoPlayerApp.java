@@ -26,11 +26,11 @@ public class VideoPlayerApp extends MeganekkoApp {
     //déclaration du tag
     public static final String TAG = "videoPlayerAppTag";
 
-    private CountDownTimer waitTimer;
-    private boolean tempo = false;
-    private Timer timer = new Timer();
-    private int counter = 0;
-    private int idTimer = 0;
+    //private CountDownTimer waitTimer;
+    //private boolean tempo = false;
+    //private Timer timer = new Timer();
+    //private int counter = 0;
+    //private int idTimer = 0;
 
     private final MainActivity activity;
     private File file;
@@ -43,7 +43,7 @@ public class VideoPlayerApp extends MeganekkoApp {
     private boolean playing;
 
     private static boolean user = false; //"private" means access to this is restricted
-    private static boolean pastUser = false; //"private" means access to this is restricted
+    //private static boolean pastUser = false; //"private" means access to this is restricted
 
     public static void getVRUser(boolean value) {
         Log.d(TAG, "getVRUser");
@@ -122,6 +122,7 @@ public class VideoPlayerApp extends MeganekkoApp {
             release();
         }
         mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
+        startPlaying();
     }
 
     @Override
@@ -185,7 +186,7 @@ public class VideoPlayerApp extends MeganekkoApp {
                         }
                     });
                 } catch (IllegalStateException e) {
-                    activity.getApp().showInfoText(1, "error");
+                    activity.getApp().showInfoText(1, "error startPlaying");
                     e.printStackTrace();
                 }
             }
@@ -219,7 +220,8 @@ public class VideoPlayerApp extends MeganekkoApp {
                 mediaPlayer.pause();
                 //mediaPlayer.seekTo(0);
             } catch (IllegalStateException e) {
-                activity.getApp().showInfoText(1, "error");
+                //activity.getApp().showInfoText(1, "error pause");
+                Log.d(TAG, "error pause");
                 e.printStackTrace();
             }
         }
