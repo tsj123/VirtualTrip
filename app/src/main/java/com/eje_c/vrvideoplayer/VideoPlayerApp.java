@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Log;
 
@@ -16,12 +17,20 @@ import com.eje_c.meganekko.SceneObject;
 import android.util.Log;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class VideoPlayerApp extends MeganekkoApp {
 
     //déclaration du tag
     public static final String TAG = "videoPlayerAppTag";
+
+    private CountDownTimer waitTimer;
+    private boolean tempo = false;
+    private Timer timer = new Timer();
+    private int counter = 0;
+    private int idTimer = 0;
 
     private final MainActivity activity;
     private File file;
@@ -33,7 +42,8 @@ public class VideoPlayerApp extends MeganekkoApp {
     private ObjectLookingStateDetector detector;
     private boolean playing;
 
-    private static boolean user = true; //"private" means access to this is restricted
+    private static boolean user = false; //"private" means access to this is restricted
+    private static boolean pastUser = false; //"private" means access to this is restricted
 
     public static void getVRUser(boolean value) {
         Log.d(TAG, "getVRUser");
@@ -66,52 +76,29 @@ public class VideoPlayerApp extends MeganekkoApp {
         this.fadeOutCanvas = AnimatorInflater.loadAnimator(getContext(), R.animator.fade_out);
         fadeOutCanvas.setTarget(canvas);
 
-        /*
-        // animation while looking at start button
-        detector = new ObjectLookingStateDetector(this, canvas, new ObjectLookingStateDetector.ObjectLookingStateListener() {
-            boolean notified;
+        //Initialiser le media player une bonne fois pour toutes
+        if (mediaPlayer != null) {
+            Log.d(TAG,"mediaPlayer pas null 01");
+            release();
+        }
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
+        startPlaying();
 
-            @Override
-            public void onLookStart(SceneObject sceneObject, Frame frame) {
-                canvasRenderer.setLooking(true);
-            }
-
-            @Override
-            public void onLooking(SceneObject sceneObject, Frame frame) {
-                canvasRenderer.update(frame);
-
-                if (!notified && canvasRenderer.getSweepFraction() >= 1.0f) {
-                    notified = true;
-                    startPlaying();
-                }
-            }
-
-            @Override
-            public void onLookEnd(SceneObject sceneObject, Frame frame) {
-                canvasRenderer.setLooking(false);
-            }
-        });
-        */
     }
 
     @Override
     public void update() {
+        Log.d(TAG, "boucle update");
 
-        //lancer la vidéo en bouclant
         if(!playing && user) {
+            Log.d(TAG, "pas playing et user");
+            playing = true;
             startPlaying();
         }
 
-        // NOT WORKING
-        else if(playing && !user){
+        else if(playing && !user) {
             pause();
         }
-
-        /* Cette condition  faisait quitter l'application lors de la fin de la vidéo en l'abscence d'utilisateur
-        if (!playing) {
-            detector.update(getFrame());
-        }
-        */
         super.update();
     }
 
@@ -127,12 +114,24 @@ public class VideoPlayerApp extends MeganekkoApp {
     }
 
     @Override
+    public void onResume(){
+        // on remet la vidéo au début
+        Log.d(TAG,"video au debut");
+        if (mediaPlayer != null) {
+            Log.d(TAG,"mediaPlayer pas null 01");
+            release();
+        }
+        mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
+    }
+
+    @Override
     public void shutdown() {
         release();
         super.shutdown();
     }
 
     private void release() {
+        Log.d(TAG,"release enclanche");
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.release();
@@ -150,73 +149,75 @@ public class VideoPlayerApp extends MeganekkoApp {
         playing = true;
         activity.hideGazeCursor();
 
-
+/*On effectue ces lignes de code au début une seule fois
         if (mediaPlayer != null) {
             Log.d(TAG,"mediaPlayer pas null 01");
             release();
         }
+        */
+            //choisir entre la vidéo de la carte SD et la video par défaut
+            //if (file.exists()) {
+            //   Log.d(TAG,"file exist");
+            //   mediaPlayer = MediaPlayer.create(getContext(), Uri.fromFile(file));
+            //   Log.d(TAG,"mediaPlayer cree");
+            //} else {
+        //On effectue cette ligne de code au début une seule fois.
+            //mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
+            //  activity.getApp().showInfoText(3, getContext().getString(R.string.error_default_video));
+            // }
 
-        //choisir entre la vidéo de la carte SD et la video par défaut
-        //if (file.exists()) {
-         //   Log.d(TAG,"file exist");
-         //   mediaPlayer = MediaPlayer.create(getContext(), Uri.fromFile(file));
-         //   Log.d(TAG,"mediaPlayer cree");
-        //} else {
-            mediaPlayer = MediaPlayer.create(getContext(), R.raw.video);
-          //  activity.getApp().showInfoText(3, getContext().getString(R.string.error_default_video));
-       // }
+            if (mediaPlayer != null) {
+                Log.d(TAG, "mediaPlayer pas null 02");
+                try {
+                    Log.d(TAG, "mediaPlayer start");
+                    mediaPlayer.start();
+                    video.getRenderData().getMaterial().getTexture().set(mediaPlayer);
 
-        if (mediaPlayer != null) {
-            Log.d(TAG,"mediaPlayer pas null 02");
-            try {
-                Log.d(TAG,"mediaPlayer start");
-                mediaPlayer.start();
-                video.getRenderData().getMaterial().getTexture().set(mediaPlayer);
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            runOnGlThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pause();
+                                }
+                            });
+                        }
+                    });
+                } catch (IllegalStateException e) {
+                    activity.getApp().showInfoText(1, "error");
+                    e.printStackTrace();
+                }
+            }
 
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            if (canvas != null) {
+                animate(fadeOutCanvas, new Runnable() {
                     @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        runOnGlThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pause();
-                            }
-                        });
+                    public void run() {
+                        canvas.setVisible(false);
                     }
                 });
-            } catch (IllegalStateException e) {
-                activity.getApp().showInfoText(1, "error");
-                e.printStackTrace();
             }
-        }
 
-        if (canvas != null) {
-            animate(fadeOutCanvas, new Runnable() {
-                @Override
-                public void run() {
-                    canvas.setVisible(false);
-                }
-            });
-        }
-
-        if (video != null) {
-            animate(fadeInVideo, new Runnable() {
-                @Override
-                public void run() {
-                    video.setVisible(true);
-                }
-            });
-        }
+            if (video != null) {
+                animate(fadeInVideo, new Runnable() {
+                    @Override
+                    public void run() {
+                        video.setVisible(true);
+                    }
+                });
+            }
     }
 
     private void pause() {
+        Log.d(TAG, "pause");
         playing = false;
         activity.showGazeCursor();
 
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.pause();
-                mediaPlayer.seekTo(0);
+                //mediaPlayer.seekTo(0);
             } catch (IllegalStateException e) {
                 activity.getApp().showInfoText(1, "error");
                 e.printStackTrace();
